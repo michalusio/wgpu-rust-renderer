@@ -168,7 +168,7 @@ impl GeometryHelper {
 			};
 
 			for i in 0..4 {
-				position_vec = Vector3::of([(x + dx[i]) * width, (y + dy[i]) * height, (z + dz[i]) * depth]);
+				position_vec = Vector3::from([(x + dx[i]) * width, (y + dy[i]) * height, (z + dz[i]) * depth]);
 
 				for j in 0..3 {
 					positions.push(position_vec[j]);

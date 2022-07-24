@@ -4,7 +4,7 @@ pub type Quaternion = Vector<f32, 4>;
 
 impl Quaternion {
 	pub fn create() -> Quaternion {
-		Quaternion::of([0.0, 0.0, 0.0, 1.0])
+		Quaternion::from([0.0, 0.0, 0.0, 1.0])
 	}
 
 	pub fn from_euler(e: Euler) -> Quaternion {
@@ -21,7 +21,7 @@ impl Quaternion {
 		let s2 = (y / 2.0).sin();
 		let s3 = (z / 2.0).sin();
 
-		Quaternion::of([
+		Quaternion::from([
 			s1 * c2 * c3 + c1 * s2 * s3,
 			c1 * s2 * c3 - s1 * c2 * s3,
 			c1 * c2 * s3 + s1 * s2 * c3,
@@ -46,7 +46,7 @@ impl Quaternion {
 
 		if trace > 0.0 {
 			let s = 0.5 / (trace + 1.0).sqrt();
-			Quaternion::of([
+			Quaternion::from([
 				(m32 - m23) * s,
 				(m13 - m31) * s,
 				(m21 - m12) * s,
@@ -54,7 +54,7 @@ impl Quaternion {
 			])
 		} else if m11 > m22 && m11 > m33 {
 			let s = 2.0 * (1.0 + m11 - m22 - m33).sqrt();
-			Quaternion::of([
+			Quaternion::from([
 				0.25 * s,
 				(m12 + m21) / s,
 				(m13 + m31) / s,
@@ -62,7 +62,7 @@ impl Quaternion {
 			])
 		} else if m22 > m33 {
 			let s = 2.0 * (1.0 + m22 - m11 - m33).sqrt();
-			Quaternion::of([
+			Quaternion::from([
 				(m12 + m21) / s,
 				0.25 * s,
 				(m23 + m32) / s,
@@ -70,7 +70,7 @@ impl Quaternion {
 			])
 		} else {
 			let s = 2.0 * (1.0 + m33 - m11 - m22).sqrt();
-			Quaternion::of([
+			Quaternion::from([
 				(m13 + m31) / s,
 				(m23 + m32) / s,
 				0.25 * s,

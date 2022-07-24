@@ -91,8 +91,8 @@ impl Scene {
 		Self::add_links::<PerspectiveCamera, Node>(&mut links);
 
 		Scene {
-			background_color: Color::of([1.0, 1.0, 1.0]),
-			links: links,
+			background_color: Color::from([1.0, 1.0, 1.0]),
+			links,
 			nodes: Vec::new(),
 		}
 	}

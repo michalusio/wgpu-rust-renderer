@@ -62,7 +62,7 @@ async fn create_scene(
 	);
 
 	let mut node = Node::new();
-	node.set_position(Vector3::of([0.0, 0.0, 3.0]));
+	node.set_position(Vector3::from([0.0, 0.0, 3.0]));
 
 	let node = pools.borrow_mut::<Node>().add(node);
 
@@ -97,7 +97,7 @@ fn update(
 ) {
 	{
 		let node = pools.borrow_mut::<Node>().borrow_mut(&objects[0]).unwrap();
-		node.set_rotation(node.get_rotation() + Vector3::of([0.0, 0.0, -0.01]));
+		node.set_rotation(node.get_rotation() + Vector3::from([0.0, 0.0, -0.01]));
 	}
 
 	pools.borrow::<Scene>()

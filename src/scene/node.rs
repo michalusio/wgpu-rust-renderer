@@ -26,9 +26,9 @@ impl Node {
 			matrix: Matrix4::identity(),
 			parent: None,
 			position: Vector3::default(),
-			quaternion: Quaternion::of([0.0, 0.0, 0.0, 1.0]),
+			quaternion: Quaternion::from([0.0, 0.0, 0.0, 1.0]),
 			rotation: Euler::default(),
-			scale: Vector3::of([1.0, 1.0, 1.0]),
+			scale: Vector3::from([1.0, 1.0, 1.0]),
 			world_matrix: Matrix4::identity(),
 		}
 	}

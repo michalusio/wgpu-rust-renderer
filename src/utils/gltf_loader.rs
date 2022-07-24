@@ -151,7 +151,7 @@ async fn parse_material(
 
 	let base_color = pools.borrow_mut::<Box<dyn MaterialNode>>().add(Box::new(
 		Vector3Node::new(
-			Color::of([base_color_factor[0], base_color_factor[1], base_color_factor[2]]),
+			Color::from([base_color_factor[0], base_color_factor[1], base_color_factor[2]]),
 		),
 	));
 
@@ -268,7 +268,7 @@ async fn parse_material(
 	let emissive_factor = material_def.emissive_factor();
 	let emissive = pools.borrow_mut::<Box<dyn MaterialNode>>().add(Box::new(
 		Vector3Node::new(
-			Color::of([emissive_factor[0], emissive_factor[1], emissive_factor[2]]),
+			Color::from([emissive_factor[0], emissive_factor[1], emissive_factor[2]]),
 		),
 	));
 
@@ -319,9 +319,9 @@ async fn parse_node(
 			rotation,
 			scale,
 		} => {
-			node.set_position(Vector3::of(translation));
-			node.set_rotation(Euler::from_quaternion(Quaternion::of(rotation)));
-			node.set_scale(Vector3::of(scale));
+			node.set_position(Vector3::from(translation));
+			node.set_rotation(Euler::from_quaternion(Quaternion::from(rotation)));
+			node.set_scale(Vector3::from(scale));
 			node.update_matrix();
 		},
 	};

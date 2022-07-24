@@ -27,6 +27,6 @@ impl Euler {
 		let pitch = (2.0 * (q0q2 - q1q3)).asin();
 		let yaw = (2.0 * (q1q2 + q0q3)).atan2(q0q0 + q1q1 - q2q2 - q3q3);
 
-		Euler::of([roll, pitch, yaw])
+		Euler::from([roll, pitch, yaw])
 	}
 }

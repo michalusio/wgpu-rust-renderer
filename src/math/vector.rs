@@ -5,9 +5,15 @@ use num_traits::Float;
 #[derive(Copy, Clone, Debug)]
 pub struct Vector<T: Copy + Clone, const N: usize>(pub [T; N]);
 
-impl<T: Copy + Clone, const N: usize> Vector<T, N> {
-	pub fn of(data: [T; N]) -> Self {
+impl<T: Copy + Clone, const N: usize> From<[T; N]> for Vector<T, N> {
+	fn from(data: [T; N]) -> Self {
 		Vector(data)
+	}
+}
+
+impl<T: Copy + Clone, const N: usize> Into<[T; N]> for Vector<T, N> {
+	fn into(self) -> [T; N] {
+		self.0
 	}
 }
 

@@ -18,7 +18,7 @@ impl FloatNode {
 	pub fn new(value: f32) -> Self {
 		FloatNode {
 			contents: UniformContents::Float {
-				value: Vector::of([value]),
+				value: Vector::from([value]),
 			},
 		}
 	}

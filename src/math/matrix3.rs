@@ -5,7 +5,7 @@ pub type Matrix3 = Vector<f32, 9>;
 impl Matrix3 {
 
 	pub fn identity() -> Matrix3 {
-		Matrix3::of(
+		Matrix3::from(
 			[
 				1.0, 0.0, 0.0,
 				0.0, 1.0, 0.0,
@@ -55,7 +55,7 @@ impl Matrix3 {
 		}
 
 		let det = 1.0 / det;
-		Matrix3::of([
+		Matrix3::from([
 			(a11 * b11 - a12 * b10 + a13 * b09) * det,
 			(a12 * b08 - a10 * b11 - a13 * b07) * det,
 			(a10 * b10 - a11 * b08 + a13 * b06) * det,

@@ -43,7 +43,7 @@ fn create_scene(
 
 	let material = MaterialHelper::create_brdf_material(
 		pools,
-		Color::of([1.0, 1.0, 1.0]),
+		Color::from([1.0, 1.0, 1.0]),
 		0.5,
 		0.5,
 	);
@@ -65,7 +65,7 @@ fn create_scene(
 	);
 
 	let mut node = Node::new();
-	node.set_position(Vector3::of([0.0, 0.0, 3.0]));
+	node.set_position(Vector3::from([0.0, 0.0, 3.0]));
 
 	let node = pools.borrow_mut::<Node>().add(node);
 	scene.add_node(&node);
@@ -96,7 +96,7 @@ fn update(
 ) {
 	{
 		let node = pools.borrow_mut::<Node>().borrow_mut(&objects[0]).unwrap();
-		node.set_rotation(node.get_rotation() + Vector3::of([0.001, 0.01, 0.003]));
+		node.set_rotation(node.get_rotation() + Vector3::from([0.001, 0.01, 0.003]));
 	}
 
 	pools.borrow::<Scene>()

@@ -39,7 +39,7 @@ fn create_scene(
 
 	let material = MaterialHelper::create_basic_material(
 		pools,
-		Color::of([1.0, 0.0, 0.0]),
+		Color::from([1.0, 0.0, 0.0]),
 	);
 
 	let mesh = pools.borrow_mut::<Mesh>().add(Mesh::new(geometry, material));
@@ -58,7 +58,7 @@ fn create_scene(
 	);
 
 	let mut node = Node::new();
-	node.set_position(Vector3::of([0.0, 0.0, 1.0]));
+	node.set_position(Vector3::from([0.0, 0.0, 1.0]));
 
 	let node = pools.borrow_mut::<Node>().add(node);
 	scene.add_node(&node);

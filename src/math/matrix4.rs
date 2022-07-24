@@ -5,7 +5,7 @@ pub type Matrix4 = Vector<f32, 16>;
 impl Matrix4 {
 
 	pub fn identity() -> Matrix4 {
-		Matrix4::of([
+		Matrix4::from([
 			1.0,
 			0.0,
 			0.0,
@@ -135,7 +135,7 @@ impl Matrix4 {
 		}
 
 		let det = 1.0 / det;
-		Matrix4::of([
+		Matrix4::from([
 			(a11 * b11 - a12 * b10 + a13 * b09) * det,
 			(a02 * b10 - a01 * b11 - a03 * b09) * det,
 			(a31 * b05 - a32 * b04 + a33 * b03) * det,
@@ -185,7 +185,7 @@ impl Matrix4 {
 		let sy = scale[1];
 		let sz = scale[2];
 
-		Matrix4::of([
+		Matrix4::from([
 			(1.0 - (yy + zz)) * sx,
 			(xy + wz) * sx,
 			(xz - wy) * sx,
@@ -208,16 +208,16 @@ impl Matrix4 {
 	pub fn decompose(
 		&self
 	) -> (Vector3, Quaternion, Vector3) {
-		let sx = Vector3::of([self[0], self[1], self[2]]).magnitude();
-		let sy = Vector3::of([self[4], self[5], self[6]]).magnitude();
-		let sz = Vector3::of([self[8], self[9], self[10]]).magnitude();
+		let sx = Vector3::from([self[0], self[1], self[2]]).magnitude();
+		let sy = Vector3::from([self[4], self[5], self[6]]).magnitude();
+		let sz = Vector3::from([self[8], self[9], self[10]]).magnitude();
 
 		let sx = match self.determinant() < 0.0 {
 			true => -sx,
 			false => sx,
 		};
 
-		let position = Vector3::of([self[12], self[13], self[14]]);
+		let position = Vector3::from([self[12], self[13], self[14]]);
 
 		let inv_sx = 1.0 / sx;
 		let inv_sy = 1.0 / sy;
@@ -239,7 +239,7 @@ impl Matrix4 {
 
 		let quaternion = Quaternion::from_rotation_matrix(m2);
 
-		let scale = Vector3::of([sx, sy, sz]);
+		let scale = Vector3::from([sx, sy, sz]);
 		(position, quaternion, scale)
 	}
 
@@ -303,7 +303,7 @@ impl Matrix4 {
 	) -> Matrix4 {
 		let f = 1.0 / (fovy / 2.0).tan();
 		let nf = 1.0 / (near - far);
-		Matrix4::of([
+		Matrix4::from([
 			f / aspect,
 			0.0,
 			0.0,
