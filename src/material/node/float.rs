@@ -7,7 +7,7 @@ use crate::{
 	resource::resource::{
 		ResourceId,
 		ResourcePool,
-	},
+	}, math::Vector,
 };
 
 pub struct FloatNode {
@@ -18,7 +18,7 @@ impl FloatNode {
 	pub fn new(value: f32) -> Self {
 		FloatNode {
 			contents: UniformContents::Float {
-				value: [value],
+				value: Vector::of([value]),
 			},
 		}
 	}

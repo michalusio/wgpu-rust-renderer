@@ -4,7 +4,6 @@ use winit::{
 	window::Window,
 };
 use wgpu_rust_renderer::{
-	math::vector3::Vector3,
 	renderer::wgpu_renderer::{
 		WGPURenderer,
 		WGPURendererOptions,
@@ -18,7 +17,7 @@ use wgpu_rust_renderer::{
 		node::Node,
 		scene::Scene,
 	},
-	utils::gltf_loader::GltfLoader,
+	utils::gltf_loader::GltfLoader, math::Vector3,
 };
 
 async fn create_scene(
@@ -44,10 +43,12 @@ async fn create_scene(
 			.unwrap()
 			.add_node(node);
 		objects.push(*node);
-		pools.borrow_mut::<Node>()
+		let node = pools.borrow_mut::<Node>()
 			.borrow_mut(node)
-			.unwrap()
-			.borrow_rotation_mut()[0] = 90.0_f32.to_radians();
+			.unwrap();
+		let mut rotation = node.get_rotation();
+		rotation[0] = 90.0_f32.to_radians();
+		node.set_rotation(rotation);
 	}
 
 	let window_size = window.inner_size();
@@ -61,10 +62,7 @@ async fn create_scene(
 	);
 
 	let mut node = Node::new();
-	Vector3::set(
-		node.borrow_position_mut(),
-		0.0, 0.0, 3.0,
-	);
+	node.set_position(Vector3::of([0.0, 0.0, 3.0]));
 
 	let node = pools.borrow_mut::<Node>().add(node);
 
@@ -99,10 +97,7 @@ fn update(
 ) {
 	{
 		let node = pools.borrow_mut::<Node>().borrow_mut(&objects[0]).unwrap();
-		Vector3::add(
-			node.borrow_rotation_mut(),
-			&[0.0, 0.0, -0.01],
-		);
+		node.set_rotation(node.get_rotation() + Vector3::of([0.0, 0.0, -0.01]));
 	}
 
 	pools.borrow::<Scene>()

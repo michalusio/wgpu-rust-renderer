@@ -17,6 +17,7 @@ exclude = [
 bytemuck = {version = "1.7.2", features = ["derive"]}
 futures = "0.3.17"
 gltf = "0.16.0"
+num-traits = "0.2.15"
 png = "0.17.1"
 wgpu = "0.11.0"
 

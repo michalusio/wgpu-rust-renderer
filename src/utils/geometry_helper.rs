@@ -1,5 +1,4 @@
 use crate::{
-	math::vector3::Vector3,
 	geometry::{
 		attribute::Attribute,
 		geometry::Geometry,
@@ -8,7 +7,7 @@ use crate::{
 	resource::resource::{
 		ResourceId,
 		ResourcePools,
-	},
+	}, math::Vector3,
 };
 
 pub struct GeometryHelper {
@@ -113,7 +112,7 @@ impl GeometryHelper {
 		let mut uvs = Vec::new();
 		let mut indices = Vec::new();
 
-		let mut position_vec = Vector3::create();
+		let mut position_vec: Vector3;
 
 		// @TODO: Clean up
 		for face in 0..6 {
@@ -169,9 +168,7 @@ impl GeometryHelper {
 			};
 
 			for i in 0..4 {
-				position_vec[0] = (x + dx[i]) * width;
-				position_vec[1] = (y + dy[i]) * height;
-				position_vec[2] = (z + dz[i]) * depth;
+				position_vec = Vector3::of([(x + dx[i]) * width, (y + dy[i]) * height, (z + dz[i]) * depth]);
 
 				for j in 0..3 {
 					positions.push(position_vec[j]);

@@ -1,15 +1,13 @@
-const ELEMENT_NUM: usize = 4;
-type Elements = [f32; ELEMENT_NUM];
+use super::{vector::Vector, euler::Euler, matrix4::Matrix4};
 
-pub struct Quaternion {
-}
+pub type Quaternion = Vector<f32, 4>;
 
 impl Quaternion {
-	pub fn create() -> Elements {
-		[0.0, 0.0, 0.0, 1.0]
+	pub fn create() -> Quaternion {
+		Quaternion::of([0.0, 0.0, 0.0, 1.0])
 	}
 
-	pub fn set_from_euler<'a>(q: &'a mut Elements, e: &'a [f32; 3]) -> &'a mut Elements {
+	pub fn from_euler(e: Euler) -> Quaternion {
 		// Assume XYZ order
 		let x = e[0];
 		let y = e[1];
@@ -23,18 +21,17 @@ impl Quaternion {
 		let s2 = (y / 2.0).sin();
 		let s3 = (z / 2.0).sin();
 
-		q[0] = s1 * c2 * c3 + c1 * s2 * s3;
-		q[1] = c1 * s2 * c3 - s1 * c2 * s3;
-		q[2] = c1 * c2 * s3 + s1 * s2 * c3;
-		q[3] = c1 * c2 * c3 - s1 * s2 * s3;
-
-		q
+		Quaternion::of([
+			s1 * c2 * c3 + c1 * s2 * s3,
+			c1 * s2 * c3 - s1 * c2 * s3,
+			c1 * c2 * s3 + s1 * s2 * c3,
+			c1 * c2 * c3 - s1 * s2 * s3
+		])
 	}
 
-	pub fn set_from_rotation_matrix<'a>(
-		q: &'a mut Elements,
-		m: &'a [f32; 16],
-	) -> &'a mut Elements {
+	pub fn from_rotation_matrix(
+		m: Matrix4,
+	) -> Quaternion {
 		let m11 = m[0];
 		let m12 = m[4];
 		let m13 = m[8];
@@ -49,30 +46,36 @@ impl Quaternion {
 
 		if trace > 0.0 {
 			let s = 0.5 / (trace + 1.0).sqrt();
-			q[0] = (m32 - m23) * s;
-			q[1] = (m13 - m31) * s;
-			q[2] = (m21 - m12) * s;
-			q[3] = 0.25 / s;
+			Quaternion::of([
+				(m32 - m23) * s,
+				(m13 - m31) * s,
+				(m21 - m12) * s,
+				0.25 / s
+			])
 		} else if m11 > m22 && m11 > m33 {
 			let s = 2.0 * (1.0 + m11 - m22 - m33).sqrt();
-			q[0] = 0.25 * s;
-			q[1] = (m12 + m21) / s;
-			q[2] = (m13 + m31) / s;
-			q[3] = (m32 - m23) / s;
+			Quaternion::of([
+				0.25 * s,
+				(m12 + m21) / s,
+				(m13 + m31) / s,
+				(m32 - m23) / s
+			])
 		} else if m22 > m33 {
 			let s = 2.0 * (1.0 + m22 - m11 - m33).sqrt();
-			q[0] = (m12 + m21) / s;
-			q[1] = 0.25 * s;
-			q[2] = (m23 + m32) / s;
-			q[3] = (m13 - m31) / s;
+			Quaternion::of([
+				(m12 + m21) / s,
+				0.25 * s,
+				(m23 + m32) / s,
+				(m13 - m31) / s
+			])
 		} else {
 			let s = 2.0 * (1.0 + m33 - m11 - m22).sqrt();
-			q[0] = (m13 + m31) / s;
-			q[1] = (m23 + m32) / s;
-			q[2] = 0.25 * s;
-			q[3] = (m21 - m12) / s;
+			Quaternion::of([
+				(m13 + m31) / s,
+				(m23 + m32) / s,
+				0.25 * s,
+				(m21 - m12) / s
+			])
 		}
-
-		q
 	}
 }

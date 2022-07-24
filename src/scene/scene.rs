@@ -7,7 +7,7 @@ use std::{
 };
 
 use crate::{
-	math::color::Color,
+	math::Color,
 	resource::resource::{
 		ResourceId,
 		ResourcePools,
@@ -77,7 +77,7 @@ fn cast_links_mut<T1: 'static, T2: 'static>(links: &mut dyn ResourceLinksTrait) 
 }
 
 pub struct Scene {
-	background_color: [f32; 3],
+	background_color: Color,
 	links: HashMap<TypeId, Box<dyn ResourceLinksTrait>>,
 	nodes: Vec<ResourceId<Node>>,
 }
@@ -91,7 +91,7 @@ impl Scene {
 		Self::add_links::<PerspectiveCamera, Node>(&mut links);
 
 		Scene {
-			background_color: *Color::set(&mut Color::create(), 1.0, 1.0, 1.0),
+			background_color: Color::of([1.0, 1.0, 1.0]),
 			links: links,
 			nodes: Vec::new(),
 		}
@@ -151,11 +151,11 @@ impl Scene {
 		nodes
 	}
 
-	pub fn borrow_background_color(&self) -> &[f32; 3] {
+	pub fn borrow_background_color(&self) -> &Color {
 		&self.background_color
 	}
 
-	pub fn borrow_background_color_mut(&mut self) -> &[f32; 3] {
+	pub fn borrow_background_color_mut(&mut self) -> &mut Color {
 		&mut self.background_color
 	}
 

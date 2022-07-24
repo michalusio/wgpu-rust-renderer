@@ -7,7 +7,7 @@ use crate::{
 	resource::resource::{
 		ResourceId,
 		ResourcePool,
-	},
+	}, math::Vector,
 };
 
 pub struct Vector3Node {
@@ -15,10 +15,10 @@ pub struct Vector3Node {
 }
 
 impl Vector3Node {
-	pub fn new(value: [f32; 3]) -> Self {
+	pub fn new(value: Vector<f32, 3>) -> Self {
 		Vector3Node {
 			contents: UniformContents::Vector3 {
-				value: value,
+				value,
 			},
 		}
 	}

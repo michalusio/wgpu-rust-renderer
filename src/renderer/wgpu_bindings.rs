@@ -8,11 +8,6 @@ use crate::{
 			UniformContents,
 		},
 	},
-	math::{
-		matrix3::Matrix3,
-		matrix3gpu::Matrix3GPU,
-		matrix4::Matrix4,
-	},
 	renderer::{
 		wgpu_samplers::WGPUSamplers,
 		wgpu_textures::WGPUTextures,
@@ -24,7 +19,7 @@ use crate::{
 	scene::{
 		camera::PerspectiveCamera,
 		node::Node,
-	},
+	}, math::{Matrix3, Matrix3GPU}
 };
 
 pub struct WGPUBinding {
@@ -101,23 +96,18 @@ impl WGPUBinding {
 		material: &Material,
 	) {
 		// @TODO: Is calculating them here inefficient?
-		let mut model_view_matrix = Matrix4::create();
-		let mut camera_matrix_inverse = Matrix4::create();
-		let mut normal_matrix = Matrix3::create();
-		let mut normal_matrix_gpu = Matrix3GPU::create();
-		Matrix4::copy(&mut camera_matrix_inverse, camera_node.borrow_world_matrix());
-		Matrix4::invert(&mut camera_matrix_inverse);
-		Matrix4::multiply(&mut model_view_matrix, &camera_matrix_inverse, node.borrow_world_matrix());
-		Matrix3::make_normal_from_matrix4(&mut normal_matrix, &model_view_matrix);
-		Matrix3GPU::copy_from_matrix3(&mut normal_matrix_gpu, &normal_matrix);
+		let camera_matrix_inverse = camera_node.get_world_matrix().invert();
+		let model_view_matrix = camera_matrix_inverse.multiply(node.get_world_matrix());
+		let normal_matrix = Matrix3::make_normal_from_matrix4(model_view_matrix);
+		let normal_matrix_gpu = Matrix3GPU::from_matrix3(normal_matrix);
 
 		// binding 0 : Object (model-view matrix, normal matrix)
 		// binding 1 : Camera (projection matrix)
 		// binding 2 : Uniform buffers
 		// @TODO: Should we calculate projection matrix * model-view matrix in CPU?
-		queue.write_buffer(&self.buffers[0], 0, bytemuck::cast_slice(&model_view_matrix));
-		queue.write_buffer(&self.buffers[0], 64, bytemuck::cast_slice(&normal_matrix_gpu));
-		queue.write_buffer(&self.buffers[1], 0, bytemuck::cast_slice(camera.borrow_projection_matrix()));
+		queue.write_buffer(&self.buffers[0], 0, bytemuck::cast_slice(&model_view_matrix.0));
+		queue.write_buffer(&self.buffers[0], 64, bytemuck::cast_slice(&normal_matrix_gpu.0));
+		queue.write_buffer(&self.buffers[1], 0, bytemuck::cast_slice(&camera.borrow_projection_matrix().0));
 
 		let mut offset = 0;
 		// @TODO: Optimize
@@ -137,10 +127,10 @@ impl WGPUBinding {
 			// Can we use generics?
 			match contents {
 				UniformContents::Float {value} => {
-					queue.write_buffer(&self.buffers[2], offset, bytemuck::cast_slice(value));
+					queue.write_buffer(&self.buffers[2], offset, bytemuck::cast_slice(&value.0));
 				},
 				UniformContents::Vector3 {value} => {
-					queue.write_buffer(&self.buffers[2], offset, bytemuck::cast_slice(value));
+					queue.write_buffer(&self.buffers[2], offset, bytemuck::cast_slice(&value.0));
 				},
 				UniformContents::Matrix4 {value} => {
 					queue.write_buffer(&self.buffers[2], offset, bytemuck::cast_slice(value));

@@ -1,18 +1,11 @@
-const ELEMENT_NUM: usize = 3;
-type Elements = [f32; ELEMENT_NUM];
+use super::{vector::Vector, quaternion::Quaternion};
 
-pub struct Euler {
-}
+pub type Euler = Vector<f32, 3>;
 
 impl Euler {
-	pub fn create() -> Elements {
-		[0.0; ELEMENT_NUM]
-	}
-
-	pub fn set_from_quaternion<'a>(
-		e: &'a mut Elements,
-		q: &'a [f32; 4],
-	) -> &'a mut Elements {
+	pub fn from_quaternion(
+		q: Quaternion,
+	) -> Euler {
 		// Assume XYZ order
 		let q0 = q[0];
 		let q1 = q[1];
@@ -34,10 +27,6 @@ impl Euler {
 		let pitch = (2.0 * (q0q2 - q1q3)).asin();
 		let yaw = (2.0 * (q1q2 + q0q3)).atan2(q0q0 + q1q1 - q2q2 - q3q3);
 
-		e[0] = roll;
-		e[1] = pitch;
-		e[2] = yaw;
-
-		e
+		Euler::of([roll, pitch, yaw])
 	}
 }

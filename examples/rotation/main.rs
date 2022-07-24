@@ -4,7 +4,7 @@ use winit::{
 	window::Window,
 };
 use wgpu_rust_renderer::{
-	math::color::Color,
+	math::{Color, Vector3},
 	renderer::wgpu_renderer::{
 		WGPURenderer,
 		WGPURendererOptions,
@@ -40,7 +40,7 @@ fn create_scene(
 
 	let material = MaterialHelper::create_basic_material(
 		pools,
-		Color::set(&mut Color::create(), 0.0, 1.0, 0.0),
+		Color::of([0.0, 1.0, 0.0]),
 	);
 
 	let mesh = pools.borrow_mut::<Mesh>().add(Mesh::new(geometry, material));
@@ -60,7 +60,7 @@ fn create_scene(
 	);
 
 	let mut node = Node::new();
-	node.borrow_position_mut()[2] = 2.0;
+	node.set_position(Vector3::of([0.0, 2.0, 0.0]));
 
 	let node = pools.borrow_mut::<Node>().add(node);
 	scene.add_node(&node);
@@ -91,7 +91,7 @@ fn update(
 ) {
 	{
 		let node = pools.borrow_mut::<Node>().borrow_mut(&objects[0]).unwrap();
-		node.borrow_rotation_mut()[2] += 0.01;
+		node.set_rotation(node.get_rotation() + Vector3::of([0.0, 0.0, 0.01]));
 	}
 
 	pools.borrow::<Scene>()

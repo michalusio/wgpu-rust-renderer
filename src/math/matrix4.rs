@@ -1,50 +1,33 @@
-use crate::math::{
-	quaternion::Quaternion,
-	vector3::Vector3,
-};
+use super::{vector::Vector, Vector3, quaternion::Quaternion};
 
-const ELEMENT_NUM: usize = 16;
-type Elements = [f32; ELEMENT_NUM];
-
-pub struct Matrix4 {
-}
+pub type Matrix4 = Vector<f32, 16>;
 
 impl Matrix4 {
-	pub fn create() -> Elements {
-		let mut elements = [0.0; ELEMENT_NUM];
-		Self::identity(&mut elements);
-		elements
-	}
 
-	pub fn identity(m: &mut Elements) -> &mut Elements {
-		m[0] = 1.0;
-		m[1] = 0.0;
-		m[2] = 0.0;
-		m[3] = 0.0;
-		m[4] = 0.0;
-		m[5] = 1.0;
-		m[6] = 0.0;
-		m[7] = 0.0;
-		m[8] = 0.0;
-		m[9] = 0.0;
-		m[10] = 1.0;
-		m[11] = 0.0;
-		m[12] = 0.0;
-		m[13] = 0.0;
-		m[14] = 0.0;
-		m[15] = 1.0;
-		m
-	}
-
-	pub fn copy<'a>(m: &'a mut Elements, src: &'a Elements) -> &'a mut Elements {
-		for i in 0..ELEMENT_NUM {
-			m[i] = src[i];
-		}
-		m
+	pub fn identity() -> Matrix4 {
+		Matrix4::of([
+			1.0,
+			0.0,
+			0.0,
+			0.0,
+			0.0,
+			1.0,
+			0.0,
+			0.0,
+			0.0,
+			0.0,
+			1.0,
+			0.0,
+			0.0,
+			0.0,
+			0.0,
+			1.0,
+		])
 	}
 
 	// Good name?
-	pub fn set_from_2d_array<'a>(m: &'a mut Elements, src: &'a [[f32; 4]; 4]) -> &'a mut Elements {
+	pub fn from_2d_array<'a>(src: &'a [[f32; 4]; 4]) -> Matrix4 {
+		let mut m = Matrix4::default();
 		for i in 0..4 {
 			for j in 0..4 {
 				m[i * 4 + j] = src[j][i];
@@ -53,27 +36,27 @@ impl Matrix4 {
 		m
 	}
 
-	pub fn multiply<'a>(
-		m: &'a mut Elements,
-		m1: &'a Elements,
-		m2: &'a Elements
-	) -> &'a mut Elements {
-		let a00 = m1[0];
-		let a01 = m1[1];
-		let a02 = m1[2];
-		let a03 = m1[3];
-		let a10 = m1[4];
-		let a11 = m1[5];
-		let a12 = m1[6];
-		let a13 = m1[7];
-		let a20 = m1[8];
-		let a21 = m1[9];
-		let a22 = m1[10];
-		let a23 = m1[11];
-		let a30 = m1[12];
-		let a31 = m1[13];
-		let a32 = m1[14];
-		let a33 = m1[15];
+	pub fn multiply(
+		&self,
+		m2: Matrix4
+	) -> Matrix4 {
+		let mut m = Matrix4::default();
+		let a00 = self[0];
+		let a01 = self[1];
+		let a02 = self[2];
+		let a03 = self[3];
+		let a10 = self[4];
+		let a11 = self[5];
+		let a12 = self[6];
+		let a13 = self[7];
+		let a20 = self[8];
+		let a21 = self[9];
+		let a22 = self[10];
+		let a23 = self[11];
+		let a30 = self[12];
+		let a31 = self[13];
+		let a32 = self[14];
+		let a33 = self[15];
 
 		let b0 = m2[0];
 		let b1 = m2[1];
@@ -114,23 +97,23 @@ impl Matrix4 {
 		m
 	}
 
-	pub fn invert(m: &mut Elements) -> &mut Elements {
-		let a00 = m[0];
-		let a01 = m[1];
-		let a02 = m[2];
-		let a03 = m[3];
-		let a10 = m[4];
-		let a11 = m[5];
-		let a12 = m[6];
-		let a13 = m[7];
-		let a20 = m[8];
-		let a21 = m[9];
-		let a22 = m[10];
-		let a23 = m[11];
-		let a30 = m[12];
-		let a31 = m[13];
-		let a32 = m[14];
-		let a33 = m[15];
+	pub fn invert(&self) -> Matrix4 {
+		let a00 = self[0];
+		let a01 = self[1];
+		let a02 = self[2];
+		let a03 = self[3];
+		let a10 = self[4];
+		let a11 = self[5];
+		let a12 = self[6];
+		let a13 = self[7];
+		let a20 = self[8];
+		let a21 = self[9];
+		let a22 = self[10];
+		let a23 = self[11];
+		let a30 = self[12];
+		let a31 = self[13];
+		let a32 = self[14];
+		let a33 = self[15];
 
 		let b00 = a00 * a11 - a01 * a10;
 		let b01 = a00 * a12 - a02 * a10;
@@ -148,37 +131,35 @@ impl Matrix4 {
 		let det = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
 
 		if det == 0.0 {
-			// @TODO: Through error?
-			return m;
+			panic!("Determinant of the matrix is 0!");
 		}
 
 		let det = 1.0 / det;
-		m[0] = (a11 * b11 - a12 * b10 + a13 * b09) * det;
-		m[1] = (a02 * b10 - a01 * b11 - a03 * b09) * det;
-		m[2] = (a31 * b05 - a32 * b04 + a33 * b03) * det;
-		m[3] = (a22 * b04 - a21 * b05 - a23 * b03) * det;
-		m[4] = (a12 * b08 - a10 * b11 - a13 * b07) * det;
-		m[5] = (a00 * b11 - a02 * b08 + a03 * b07) * det;
-		m[6] = (a32 * b02 - a30 * b05 - a33 * b01) * det;
-		m[7] = (a20 * b05 - a22 * b02 + a23 * b01) * det;
-		m[8] = (a10 * b10 - a11 * b08 + a13 * b06) * det;
-		m[9] = (a01 * b08 - a00 * b10 - a03 * b06) * det;
-		m[10] = (a30 * b04 - a31 * b02 + a33 * b00) * det;
-		m[11] = (a21 * b02 - a20 * b04 - a23 * b00) * det;
-		m[12] = (a11 * b07 - a10 * b09 - a12 * b06) * det;
-		m[13] = (a00 * b09 - a01 * b07 + a02 * b06) * det;
-		m[14] = (a31 * b01 - a30 * b03 - a32 * b00) * det;
-		m[15] = (a20 * b03 - a21 * b01 + a22 * b00) * det;
-
-		m
+		Matrix4::of([
+			(a11 * b11 - a12 * b10 + a13 * b09) * det,
+			(a02 * b10 - a01 * b11 - a03 * b09) * det,
+			(a31 * b05 - a32 * b04 + a33 * b03) * det,
+			(a22 * b04 - a21 * b05 - a23 * b03) * det,
+			(a12 * b08 - a10 * b11 - a13 * b07) * det,
+			(a00 * b11 - a02 * b08 + a03 * b07) * det,
+			(a32 * b02 - a30 * b05 - a33 * b01) * det,
+			(a20 * b05 - a22 * b02 + a23 * b01) * det,
+			(a10 * b10 - a11 * b08 + a13 * b06) * det,
+			(a01 * b08 - a00 * b10 - a03 * b06) * det,
+			(a30 * b04 - a31 * b02 + a33 * b00) * det,
+			(a21 * b02 - a20 * b04 - a23 * b00) * det,
+			(a11 * b07 - a10 * b09 - a12 * b06) * det,
+			(a00 * b09 - a01 * b07 + a02 * b06) * det,
+			(a31 * b01 - a30 * b03 - a32 * b00) * det,
+			(a20 * b03 - a21 * b01 + a22 * b00) * det
+		])
 	}
 
-	pub fn compose<'a>(
-		m: &'a mut Elements,
-		position: &'a [f32; 3],
-		quaternion: &'a [f32; 4],
-		scale: &'a [f32; 3],
-	) -> &'a mut Elements {
+	pub fn compose(
+		position: Vector3,
+		quaternion: Quaternion,
+		scale: Vector3,
+	) -> Matrix4 {
 		let x = quaternion[0];
 		let y = quaternion[1];
 		let z = quaternion[2];
@@ -204,55 +185,45 @@ impl Matrix4 {
 		let sy = scale[1];
 		let sz = scale[2];
 
-		m[0] = (1.0 - (yy + zz)) * sx;
-		m[1] = (xy + wz) * sx;
-		m[2] = (xz - wy) * sx;
-		m[3] = 0.0;
-
-		m[4] = (xy - wz) * sy;
-		m[5] = (1.0 - (xx + zz)) * sy;
-		m[6] = (yz + wx) * sy;
-		m[7] = 0.0;
-
-		m[8] = (xz + wy) * sz;
-		m[9] = (yz - wx) * sz;
-		m[10] = (1.0 - (xx + yy)) * sz;
-		m[11] = 0.0;
-
-		m[12] = position[0];
-		m[13] = position[1];
-		m[14] = position[2];
-		m[15] = 1.0;
-
-		m
+		Matrix4::of([
+			(1.0 - (yy + zz)) * sx,
+			(xy + wz) * sx,
+			(xz - wy) * sx,
+			0.0,
+			(xy - wz) * sy,
+			(1.0 - (xx + zz)) * sy,
+			(yz + wx) * sy,
+			0.0,
+			(xz + wy) * sz,
+			(yz - wx) * sz,
+			 (1.0 - (xx + yy)) * sz,
+			 0.0,
+			 position[0],
+			 position[1],
+			 position[2],
+			 1.0,
+		])
 	}
 
-	pub fn decompose<'a>(
-		position: &mut [f32; 3],
-		quaternion: &mut [f32; 4],
-		scale: &mut [f32; 3],
-		m: &Elements,
-	) {
-		let mut v = Vector3::create();
-		let sx = Vector3::length(Vector3::set(&mut v, m[0], m[1], m[2]));
-		let sy = Vector3::length(Vector3::set(&mut v, m[4], m[5], m[6]));
-		let sz = Vector3::length(Vector3::set(&mut v, m[8], m[9], m[10]));
+	pub fn decompose(
+		&self
+	) -> (Vector3, Quaternion, Vector3) {
+		let sx = Vector3::of([self[0], self[1], self[2]]).magnitude();
+		let sy = Vector3::of([self[4], self[5], self[6]]).magnitude();
+		let sz = Vector3::of([self[8], self[9], self[10]]).magnitude();
 
-		let sx = match Matrix4::determinant(m) < 0.0 {
+		let sx = match self.determinant() < 0.0 {
 			true => -sx,
 			false => sx,
 		};
 
-		position[0] = m[12];
-		position[1] = m[13];
-		position[2] = m[14];
+		let position = Vector3::of([self[12], self[13], self[14]]);
 
 		let inv_sx = 1.0 / sx;
 		let inv_sy = 1.0 / sy;
 		let inv_sz = 1.0 / sz;
 
-		let mut m2 = Self::create();
-		Self::copy(&mut m2, m);
+		let mut m2 = self.clone();
 
 		m2[0] *= inv_sx;
 		m2[1] *= inv_sx;
@@ -266,30 +237,29 @@ impl Matrix4 {
 		m2[9] *= inv_sz;
 		m2[10] *= inv_sz;
 
-		Quaternion::set_from_rotation_matrix(quaternion, &m2);
+		let quaternion = Quaternion::from_rotation_matrix(m2);
 
-		scale[0] = sx;
-		scale[1] = sy;
-		scale[2] = sz;
+		let scale = Vector3::of([sx, sy, sz]);
+		(position, quaternion, scale)
 	}
 
-	pub fn determinant(m: &Elements) -> f32 {
-		let n11 = m[0];
-		let n12 = m[4];
-		let n13 = m[8];
-		let n14 = m[12];
-		let n21 = m[1];
-		let n22 = m[5];
-		let n23 = m[9];
-		let n24 = m[13];
-		let n31 = m[2];
-		let n32 = m[6];
-		let n33 = m[10];
-		let n34 = m[14];
-		let n41 = m[3];
-		let n42 = m[7];
-		let n43 = m[11];
-		let n44 = m[15];
+	pub fn determinant(&self) -> f32 {
+		let n11 = self[0];
+		let n12 = self[4];
+		let n13 = self[8];
+		let n14 = self[12];
+		let n21 = self[1];
+		let n22 = self[5];
+		let n23 = self[9];
+		let n24 = self[13];
+		let n31 = self[2];
+		let n32 = self[6];
+		let n33 = self[10];
+		let n34 = self[14];
+		let n41 = self[3];
+		let n42 = self[7];
+		let n43 = self[11];
+		let n44 = self[15];
 
 		n41 * (
 			n14 * n23 * n32
@@ -326,32 +296,30 @@ impl Matrix4 {
 	}
 
 	pub fn make_perspective(
-		m: &mut Elements,
 		fovy: f32,
 		aspect: f32,
 		near: f32,
 		far: f32
-	) -> &mut Elements {
+	) -> Matrix4 {
 		let f = 1.0 / (fovy / 2.0).tan();
-		m[0] = f / aspect;
-		m[1] = 0.0;
-		m[2] = 0.0;
-		m[3] = 0.0;
-		m[4] = 0.0;
-		m[5] = f;
-		m[6] = 0.0;
-		m[7] = 0.0;
-		m[8] = 0.0;
-		m[9] = 0.0;
-		m[11] = -1.0;
-		m[12] = 0.0;
-		m[13] = 0.0;
-		m[15] = 0.0;
-
 		let nf = 1.0 / (near - far);
-		m[10] = far * nf;
-		m[14] = far * near * nf;
-
-		m
+		Matrix4::of([
+			f / aspect,
+			0.0,
+			0.0,
+			0.0,
+			0.0,
+			f,
+			0.0,
+			0.0,
+			0.0,
+			0.0,
+			far * nf,
+			-1.0,
+			0.0,
+			0.0,
+			far * near * nf,
+			0.0,
+		])
 	}
 }

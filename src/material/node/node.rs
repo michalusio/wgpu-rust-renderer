@@ -7,13 +7,13 @@ use crate::{
 	texture::{
 		sampler::Sampler,
 		texture::Texture,
-	},
+	}, math::{Vector, Vector3},
 };
 
 pub enum UniformContents {
-	Float {value: [f32; 1]},
+	Float {value: Vector<f32, 1>},
 	Matrix4 {value: [f32; 16]},
-	Vector3 {value: [f32; 3]},
+	Vector3 {value: Vector3},
 	Texture {
 		texture: ResourceId<Texture>,
 		sampler: ResourceId<Sampler>,

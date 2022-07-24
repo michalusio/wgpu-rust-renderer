@@ -29,7 +29,8 @@ use crate::{
 
 pub struct WGPURendererOptions {
 	pub sample_count: u32,
-	pub presentation_mode: wgpu::PresentMode
+	pub presentation_mode: wgpu::PresentMode,
+	pub power_preference: wgpu::PowerPreference
 }
 
 impl Default for WGPURendererOptions {
@@ -37,6 +38,7 @@ impl Default for WGPURendererOptions {
 		WGPURendererOptions {
 			sample_count: 4,
 			presentation_mode: wgpu::PresentMode::Mailbox,
+			power_preference: wgpu::PowerPreference::default(),
 		}
 	}
 }
@@ -74,7 +76,7 @@ impl WGPURenderer {
 			.request_adapter(&wgpu::RequestAdapterOptions {
 				compatible_surface: Some(&surface),
 				force_fallback_adapter: false,
-				power_preference: wgpu::PowerPreference::default(),
+				power_preference: options.power_preference,
 			})
 			.await
 			.expect("Failed to find an appropriate adapter");
@@ -93,11 +95,11 @@ impl WGPURenderer {
 
 		let surface_configuration = wgpu::SurfaceConfiguration {
 			// @TODO: Color management
+			usage: wgpu::TextureUsages::RENDER_ATTACHMENT,
 			format: wgpu::TextureFormat::Bgra8Unorm,
+			width: (width * pixel_ratio) as u32,
 			height: (height * pixel_ratio) as u32,
 			present_mode: options.presentation_mode,
-			usage: wgpu::TextureUsages::RENDER_ATTACHMENT,
-			width: (width * pixel_ratio) as u32,
 		};
 
 		surface.configure(&device, &surface_configuration);
@@ -451,7 +453,7 @@ fn create_color_buffer(
 			depth_or_array_layers: 1,
 		},
 		mip_level_count: 1,
-		sample_count: sample_count,
+		sample_count,
 		dimension: wgpu::TextureDimension::D2,
 		format: wgpu::TextureFormat::Bgra8Unorm,
 		usage: wgpu::TextureUsages::RENDER_ATTACHMENT,
@@ -473,7 +475,7 @@ fn create_depth_buffer(
 			depth_or_array_layers: 1,
 		},
 		mip_level_count: 1,
-		sample_count: sample_count,
+		sample_count,
 		dimension: wgpu::TextureDimension::D2,
 		format: wgpu::TextureFormat::Depth24PlusStencil8,
 		usage: wgpu::TextureUsages::RENDER_ATTACHMENT,

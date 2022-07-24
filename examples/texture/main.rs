@@ -5,8 +5,7 @@ use winit::{
 };
 use wgpu_rust_renderer::{
 	math::{
-		color::Color,
-		vector3::Vector3,
+		Color, Vector3,
 	},
 	renderer::wgpu_renderer::{
 		WGPURenderer,
@@ -55,13 +54,13 @@ async fn create_scene(
 
 	let material = MaterialHelper::create_basic_material_with_texture(
 		pools,
-		Color::set(&mut Color::create(), 0.5, 0.5, 1.0),
+		Color::of([0.5, 0.5, 1.0]),
 		texture,
 	);
 
 	let mesh = pools.borrow_mut::<Mesh>().add(Mesh::new(geometry, material));
 	let mut node = Node::new();
-	node.borrow_rotation_mut()[0] = 35.0_f32.to_radians();
+	node.set_rotation(Vector3::of([35.0_f32.to_radians(), 0.0, 0.0]));
 	let node = pools.borrow_mut::<Node>().add(node);
 	scene.add_node(&node);
 	scene.assign(&node, &mesh);
@@ -78,10 +77,7 @@ async fn create_scene(
 	);
 
 	let mut node = Node::new();
-	Vector3::set(
-		node.borrow_position_mut(),
-		0.0, 0.0, 3.0,
-	);
+	node.set_position(Vector3::of([0.0, 0.0, 3.0]));
 
 	let node = pools.borrow_mut::<Node>().add(node);
 	scene.add_node(&node);
@@ -112,10 +108,7 @@ fn update(
 ) {
 	{
 		let node = pools.borrow_mut::<Node>().borrow_mut(&objects[0]).unwrap();
-		Vector3::add(
-			node.borrow_rotation_mut(),
-			&[0.0, 0.01, 0.0],
-		);
+		node.set_rotation(node.get_rotation() + Vector3::of([0.0, 0.01, 0.0]));
 	}
 
 	pools.borrow::<Scene>()

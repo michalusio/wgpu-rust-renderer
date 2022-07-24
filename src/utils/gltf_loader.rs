@@ -32,9 +32,7 @@ use crate::{
 		},
 	},
 	math::{
-		euler::Euler,
-		matrix4::Matrix4,
-		vector3::Vector3,
+		Color, Euler, Vector3, Quaternion, Matrix4,
 	},
 	resource::resource::{
 		ResourceId,
@@ -153,7 +151,7 @@ async fn parse_material(
 
 	let base_color = pools.borrow_mut::<Box<dyn MaterialNode>>().add(Box::new(
 		Vector3Node::new(
-			[base_color_factor[0], base_color_factor[1], base_color_factor[2]],
+			Color::of([base_color_factor[0], base_color_factor[1], base_color_factor[2]]),
 		),
 	));
 
@@ -270,7 +268,7 @@ async fn parse_material(
 	let emissive_factor = material_def.emissive_factor();
 	let emissive = pools.borrow_mut::<Box<dyn MaterialNode>>().add(Box::new(
 		Vector3Node::new(
-			[emissive_factor[0], emissive_factor[1], emissive_factor[2]],
+			Color::of([emissive_factor[0], emissive_factor[1], emissive_factor[2]]),
 		),
 	));
 
@@ -314,18 +312,16 @@ async fn parse_node(
 		gltf::scene::Transform::Matrix {
 			matrix,
 		} => {
-			let mut matrix2 = Matrix4::create();
-			let matrix = Matrix4::set_from_2d_array(&mut matrix2, &matrix);
-			node.set_matrix(&matrix);
+			node.set_matrix(Matrix4::from_2d_array(&matrix));
 		},
 		gltf::scene::Transform::Decomposed {
 			translation,
 			rotation,
 			scale,
 		} => {
-			Vector3::copy(node.borrow_position_mut(), &translation);
-			Euler::set_from_quaternion(node.borrow_rotation_mut(), &rotation);
-			Vector3::copy(node.borrow_scale_mut(), &scale);
+			node.set_position(Vector3::of(translation));
+			node.set_rotation(Euler::from_quaternion(Quaternion::of(rotation)));
+			node.set_scale(Vector3::of(scale));
 			node.update_matrix();
 		},
 	};

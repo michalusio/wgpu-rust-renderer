@@ -18,7 +18,7 @@ use crate::{
 			xyz::XYZNode,
 		},
 	},
-	math::color::Color,
+	math::Color,
 	resource::resource::{
 		ResourceId,
 		ResourcePools,
@@ -38,11 +38,11 @@ pub struct MaterialHelper {
 impl MaterialHelper {
 	pub fn create_basic_material(
 		pools: &mut ResourcePools,
-		color: &[f32; 3],
+		color: Color,
 	) -> ResourceId<Material> {
 		let color_node = pools.borrow_mut::<Box<dyn MaterialNode>>().add(
 			Box::new(Vector3Node::new(
-				*Color::copy(&mut Color::create(), color),
+				color,
 			)),
 		);
 
@@ -51,12 +51,12 @@ impl MaterialHelper {
 
 	pub fn create_basic_material_with_texture(
 		pools: &mut ResourcePools,
-		color: &[f32; 3],
+		color: Color,
 		texture: ResourceId<Texture>,
 	) -> ResourceId<Material> {
 		let color = pools.borrow_mut::<Box<dyn MaterialNode>>().add(
 			Box::new(Vector3Node::new(
-				*Color::copy(&mut Color::create(), color),
+				color,
 			),
 		));
 
@@ -81,13 +81,13 @@ impl MaterialHelper {
 
 	pub fn create_brdf_material(
 		pools: &mut ResourcePools,
-		color: &[f32; 3],
+		color: Color,
 		metallic: f32,
 		roughness: f32,
 	) -> ResourceId<Material> {
 		let base_color = pools.borrow_mut::<Box<dyn MaterialNode>>().add(
 			Box::new(Vector3Node::new(
-				*Color::copy(&mut Color::create(), color),
+				color
 			)),
 		);
 
