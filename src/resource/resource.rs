@@ -124,7 +124,7 @@ impl ResourcePools {
 		Self::add::<Texture>(&mut pools);
 
 		ResourcePools {
-			pools: pools,
+			pools,
 		}
 	}
 
@@ -163,6 +163,7 @@ impl ResourcePools {
 	}
 }
 
+#[derive(Copy, Clone)]
 pub struct ResourceId<T> {
 	pub id: usize,
 	_phantom: PhantomData<T>,
@@ -171,18 +172,9 @@ pub struct ResourceId<T> {
 impl<T> ResourceId<T> {
 	fn new(id: usize) -> Self {
 		ResourceId {
-			id: id,
+			id,
 			_phantom: PhantomData
 		}
-	}
-}
-
-impl<T> Copy for ResourceId<T> {
-}
-
-impl<T> Clone for ResourceId<T> {
-	fn clone(&self) -> Self {
-		*self
 	}
 }
 
