@@ -163,7 +163,6 @@ impl ResourcePools {
 	}
 }
 
-#[derive(Copy, Clone)]
 pub struct ResourceId<T> {
 	pub id: usize,
 	_phantom: PhantomData<T>,
@@ -177,6 +176,14 @@ impl<T> ResourceId<T> {
 		}
 	}
 }
+
+impl<T> Clone for ResourceId<T> {
+    fn clone(&self) -> Self {
+        Self { id: self.id.clone(), _phantom: self._phantom.clone() }
+    }
+}
+
+impl<T> Copy for ResourceId<T> {}
 
 impl<T> Hash for ResourceId<T> {
     fn hash<H: Hasher>(&self, state: &mut H) {
